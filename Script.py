@@ -2,6 +2,7 @@
 # Dataframe
 import pandas as pd
 import json
+
 # Array
 import numpy as np
 
@@ -39,8 +40,8 @@ for a in file_object:
 
     #loads(json, precise_float=self.precise_float), dtype=None)
     
-with open('Tech-Gadgets-Recommendation/Data/test.json') as data:
-    review_df = pd.read_json(data, orient='records', lines=True, encoding='utf-8')
+with open('Data Science/Tech-Gadgets-Recommendation/Datasets/Sample_Electronics.json') as data:
+    review_df = pd.read_json(data, orient='records', lines=True)
 
 
 '''with open('Tech-Gadgets-Recommendation/Data/test.json') as json_file:      
@@ -61,3 +62,28 @@ review_df = review_df.rename(columns={'overall': 'Rating'})
 
 print ("Total data:", str(review_df.shape))
 print(review_df.head())
+
+
+##########################################
+## IMPORT ELECTRONICS PRODUCT METADATA IN PANDAS
+##########################################
+
+import gzip
+
+def parse(path):
+  g = gzip.open(path, 'rb')
+  for l in g:
+    yield eval(l)
+
+def getDF(path):
+  i = 0
+  df = {}
+  for d in parse(path):
+    df[i] = d
+    i += 1
+  return pd.DataFrame.from_dict(df, orient='index')
+
+dfmeta = getDF('Data Science/Tech-Gadgets-Recommendation/Datasets/meta_Electronics.json.gz')
+
+print(dfmeta.head())
+
