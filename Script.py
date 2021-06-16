@@ -83,7 +83,7 @@ def getDF(path):
     i += 1
   return pd.DataFrame.from_dict(df, orient='index')
 
-dfmeta = getDF('Data Science/Tech-Gadgets-Recommendation/Datasets/meta_Electronics.json.gz')
+dfmeta = getDF('Data Science/Tech-Gadgets-Recommendation/Datasets/Sample_meta_Electronics.json.gz')
 
 print(dfmeta.head())
 
