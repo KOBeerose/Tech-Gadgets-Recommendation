@@ -1,48 +1,20 @@
-
 # Dataframe
 import pandas as pd
-import json
 
-# Array
-import numpy as np
-
-# Decompress the file
+# Decompressing the file
 import gzip
 
-# Visualizations
-import matplotlib.pyplot as plt
-from matplotlib.colors import ListedColormap
-import seaborn as sns
-import matplotlib.colors as colors
 
+# Imporing a sample of Electronics Dataset with Pandas
 
-# Datetime
-from datetime import datetime
+with open('Data Science/Tech-Gadgets-Recommendation/Datasets/Sample_Cell_Phones_and_Accessories_5.json') as data:
+    review_df = pd.read_json(data, orient='records', lines=True)
 
-## Warnings
-import warnings
-from scipy import stats
-warnings.filterwarnings('ignore')
-
-# Large dataset
-import dask.bag as db
-
-
-
-
-##########################################
-## IMPORT ELECTRONICS PRODUCT REVIEW DATA IN PANDAS
-##########################################
-
-"""file_object = open("Tech-Gadgets-Recommendation/Data/test.json",'r')
+    """file_object = open("Tech-Gadgets-Recommendation/Data/test.json",'r')
 for a in file_object:
     print(a)"""
 
-    #loads(json, precise_float=self.precise_float), dtype=None)
-    
-with open('Data Science/Tech-Gadgets-Recommendation/Datasets/Sample_Electronics.json') as data:
-    review_df = pd.read_json(data, orient='records', lines=True)
-
+# loads(json, precise_float=self.precise_float), dtype=None)
 
 '''with open('Tech-Gadgets-Recommendation/Data/test.json') as json_file:      
     data = json_file.readlines()
@@ -52,38 +24,72 @@ with open('Data Science/Tech-Gadgets-Recommendation/Datasets/Sample_Electronics.
 print(pd.DataFrame(data))'''
 
 
+# Indexing by the asin column
 
-##########################################
-## CHECK DATA IN PANDAS
-##########################################
+# Changing the the column name`
+review_df = (review_df.rename(columns={'overall': 'Rating'})).set_index("asin")
 
-# change column name 
-review_df = review_df.rename(columns={'overall': 'Rating'})
 
-print ("Total data:", str(review_df.shape))
+# Checking the reviews sample
+
+print("Total data:", str(review_df.shape))
 print(review_df.head())
 
 
-##########################################
-## IMPORT ELECTRONICS PRODUCT METADATA IN PANDAS
-##########################################
-
-import gzip
+# Importing the Metadata of Electronics Dataset
 
 def parse(path):
-  g = gzip.open(path, 'rb')
-  for l in g:
-    yield eval(l)
+    g = gzip.open(path, 'rb')
+    for l in g:
+        yield eval(l)
+
 
 def getDF(path):
-  i = 0
-  df = {}
-  for d in parse(path):
-    df[i] = d
-    i += 1
-  return pd.DataFrame.from_dict(df, orient='index')
+    i = 0
+    df = {}
+    for d in parse(path):
+        df[i] = d
+        i += 1
+    return pd.DataFrame.from_dict(df, orient='index')
 
-dfmeta = getDF('Data Science/Tech-Gadgets-Recommendation/Datasets/Sample_meta_Electronics.json.gz')
 
-print(dfmeta.head())
+dfmeta = getDF(
+    'Data Science/Tech-Gadgets-Recommendation/Datasets/Sample_meta_Cell_Phones_and_Accessories.json.gz')
 
+
+# Indexing by the asin column
+
+#meta_df = dfmeta.set_index("asin")
+meta_df = dfmeta.set_index("asin")
+
+# Checking the metadata sample
+print("Total metadata:", str(meta_df.shape))
+print(meta_df.head())
+
+## Merging Reviews with Metadata
+
+product_reviews=pd.merge(review_df,meta_df,on='asin', how='left')
+
+print(product_reviews.head())
+
+print ("Total products:", str(product_reviews.shape))
+
+product_reviews.info()
+
+
+
+
+## Extracting Cell Phones from title column
+
+# Drop null values in proudct title column 
+product_reviews=product_reviews.dropna(subset=['title'])
+
+phone_reviews = product_reviews[product_reviews["title"].str.contains("phone|phones|Phone|Phones|cell|Cell|mobile ")]
+
+print("Total products:", phone_reviews.shape)
+
+# cheking the missing values
+
+print(phone_reviews.isnull().sum())
+
+print(phone_reviews[phone_reviews['brand'].isnull()])
