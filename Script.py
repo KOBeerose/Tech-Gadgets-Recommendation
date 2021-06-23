@@ -92,4 +92,17 @@ print("Total products:", phone_reviews.shape)
 
 print(phone_reviews.isnull().sum())
 
-print(phone_reviews[phone_reviews['brand'].isnull()])
+# Dropping some columns from the Dataset
+
+phone_reviews=phone_reviews.drop(['style','image','vote','reviewerID','reviewTime','verified','reviewerName','tech1','tech2','main_cat','also_view','also_buy','unixReviewTime','date','imageURL'],axis=1)
+
+
+# Dropping null value columns
+
+phone_reviews=phone_reviews.dropna(subset=['reviewText','summary'])
+
+# Last check
+
+print(phone_reviews.isnull().sum())
+
+print(phone_reviews.info())
