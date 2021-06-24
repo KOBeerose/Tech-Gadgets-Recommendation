@@ -26,14 +26,8 @@ print(pd.DataFrame(data))'''
 
 # Indexing by the asin column
 
-# Changing the the column name`
+# Changing the the column name
 review_df = (review_df.rename(columns={'overall': 'Rating'})).set_index("asin")
-
-
-# Checking the reviews sample
-
-print("Total data:", str(review_df.shape))
-print(review_df.head())
 
 
 # Importing the Metadata of Electronics Dataset
@@ -62,21 +56,10 @@ dfmeta = getDF(
 #meta_df = dfmeta.set_index("asin")
 meta_df = dfmeta.set_index("asin")
 
-# Checking the metadata sample
-print("Total metadata:", str(meta_df.shape))
-print(meta_df.head())
 
 ## Merging Reviews with Metadata
 
 product_reviews=pd.merge(review_df,meta_df,on='asin', how='left')
-
-print(product_reviews.head())
-
-print ("Total products:", str(product_reviews.shape))
-
-product_reviews.info()
-
-
 
 
 ## Extracting Cell Phones from title column
@@ -86,23 +69,27 @@ product_reviews=product_reviews.dropna(subset=['title'])
 
 phone_reviews = product_reviews[product_reviews["title"].str.contains("phone|phones|Phone|Phones|cell|Cell|mobile ")]
 
-print("Total products:", phone_reviews.shape)
 
-# cheking the missing values
-
-print(phone_reviews.isnull().sum())
 
 # Dropping some columns from the Dataset
 
-phone_reviews=phone_reviews.drop(['style','image','vote','reviewerID','reviewTime','verified','reviewerName','tech1','tech2','main_cat','also_view','also_buy','unixReviewTime','date','imageURL'],axis=1)
+
+phone_reviews=phone_reviews.drop(['style','image','reviewerID','reviewTime','verified','reviewerName','tech1','tech2','main_cat','also_view','also_buy','unixReviewTime','date','imageURL'],axis=1)
 
 
 # Dropping null value columns
 
-phone_reviews=phone_reviews.dropna(subset=['reviewText','summary'])
+phone_reviews=phone_reviews.dropna(subset=['reviewText','summary','vote'])
 
-# Last check
 
-print(phone_reviews.isnull().sum())
 
-print(phone_reviews.info())
+
+# Saving Dataframe in csv 
+
+phone_reviews.to_csv('Datasets/phone_reviews.csv', sep=',', index = False)
+
+
+# Concatenate reviewText and summary 
+
+phone_reviews['review_text'] = phone_reviews[['summary', 'reviewText']].apply(lambda x: " ".join(str(y) for y in x if str(y) != 'nan'), axis = 1)
+phone_reviews1 = phone_reviews.drop(['reviewText', 'summary'], axis = 1)
