@@ -92,4 +92,26 @@ phone_reviews.to_csv('Datasets/phone_reviews.csv', sep=',', index = False)
 # Concatenate reviewText and summary 
 
 phone_reviews['review_text'] = phone_reviews[['summary', 'reviewText']].apply(lambda x: " ".join(str(y) for y in x if str(y) != 'nan'), axis = 1)
-phone_reviews1 = phone_reviews.drop(['reviewText', 'summary'], axis = 1)
+cln_phone_reviews = phone_reviews.drop(['reviewText', 'summary'], axis = 1)
+
+
+
+# Apply a helpfullness ratio from votes
+
+cln_phone_reviews['helpfulness'] = cln_phone_reviews['vote'].apply(lambda x: x/100)
+cln_phone_reviews = cln_phone_reviews.drop('vote', axis = 1)
+
+# adding a classification of the rating
+
+
+cln_phone_reviews['rating_class'] = cln_phone_reviews['Rating'].apply(lambda x: 'bad' if x < 3 else'good')
+
+
+# Shifting asin to the first position
+
+first_column = cln_phone_reviews.pop('asin')
+cln_phone_reviews.insert(0, 'asin', first_column)
+
+
+# Rename the columns
+cln_phone_reviews.columns = ['product_id','rating','category','description','title','brand','feature','rank','details','related','price','img_url','review_text','helpfulness','rating_class']
