@@ -1,11 +1,3 @@
-"""
-lmhm a si l batouri khask d5el hadchi
-pip ola conda install spacy
-       //             nltk
-       //             textblob
-python -m spacy download en_core_web_sm
-"""
-
 # We get started by importing spacy
 import spacy
 from textblob.classifiers import NaiveBayesClassifier
